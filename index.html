@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>TicTacToy</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .big_conteiner{
+            width: 220px;
+            height: 220px;
+            margin: 5px auto;
+        }
+
+        .aty1{
+            width: 70px;
+            height: 70px;
+            border: 1px solid darkslategray;
+            display: inline-block;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .bbih5{
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+            height: 32px;
+            width: 32px;
+        }
+
+        .ddr45{
+            display: none;
+        }
+        .choose_user{
+            display: none;
+        }
+
+        .game_over{
+            display: none;
+        }
+
+        .dtn51{
+            display: none;
+        }
+
+        .create_room_div_exist{
+            display: none;
+        }
+
+        .ubbdw37{
+            cursor: pointer;
+            color: darkred;
+        }
+        .bbd755{
+            display: none;
+        }
+
+
+    </style>
+
+</head>
+<body>
+
+    <div class="jumbotron text-center">
+        <div class="col-md-6">
+            <h1>TicTacToy</h1>
+            <h3 class="text-info uiy62">Create Room</h3>
+            <!--<h1 class="ttel7">Start</h1>-->
+            <div class="choose_user">
+                <button class="player_chooses btn btn-success" data-type="x">X</button>
+                <button class="player_chooses btn btn-danger" data-type="o">O</button>
+            </div>
+        </div>
+
+        <div class="col-md-6 frr43">
+            <h1>Free Rooms</h1>
+            <div class="free_rooms_all"></div>
+        </div>
+
+
+        <div class="col-md-12 game_over">
+           <h1>Game Over !!!</h1>
+           <h1 class="text-danger vv74"></h1>
+        </div>
+    </div>
+
+    <div class="col-md-12 jumbotron text-center bbd755">
+        <img src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif" alt="11">
+    </div>
+
+    <div class="col-md-12 jumbotron text-center dtn51">
+       <div class="col-md-3 create_room_div">
+           <input type="text" class="form-control input_name"><br>
+           <button class="btn btn-success ilp84">Create Room</button>
+       </div>
+
+        <div class="col-md-3 create_room_div_exist">
+            <p>Room Name</p>
+            <button class="btn btn-warning ssw78"></button>
+        </div>
+
+    </div>
+    
+    <div class="jumbotron text-center ddr45">
+        <div class="row big_conteiner">
+            <div class="aty1" data-id="1"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="2"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="3"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="4"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="5"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="6"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="7"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="8"> <p class="bbih5"></p> </div>
+            <div class="aty1" data-id="9"> <p class="bbih5"></p> </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        $(function () {
+            var socket = io(':3000');
+            RoomNameMy='';
+
+            socket.on('start game', function(res){
+
+                var roomNameCurr = res.name;
+
+                socket.emit('delete room', {'room':roomNameCurr});
+
+                if( typeof RoomNameMy != ""){
+                    if(RoomNameMy == res.name ){
+                        $('.ddr45').css('display','none')
+                    }
+                }
+
+            });
+
+            socket.on('delete room',function(room){
+
+                $('.ubbdw37').each(function(){
+                    if($(this).html() == room.room){
+                        $(this).remove();
+                    }
+                });
+
+                if(room.room == RoomNameMy){
+                    $('.choose_user').css('display','block');
+                    $('.bbd755').css('display','none')
+                }
+            });
+
+            var xik=[];
+            var oik=[];
+
+            $('.aty1').click(function(){
+                if($(this).find('.bbih5').html() == ''){
+                    if(userPlayItem == 'X'  && xik.length == oik.length){
+                        socket.emit('chat message', {
+                            'id':$(this).data('id'),
+                            'text':userPlayItem,
+                            'room':RoomNameMy
+                        });
+                    }
+
+                    if(userPlayItem == 'O'  && xik.length-1 == oik.length){
+                        socket.emit('chat message', {
+                            'id':$(this).data('id'),
+                            'text':userPlayItem,
+                            'room':RoomNameMy
+                        });
+                    }
+
+                    return false;
+                }else{
+                    alert('Zbaxvac e!')
+                }
+            });
+
+            socket.on('chat message', function(msg){
+                if(msg.room == RoomNameMy){
+
+                    if(msg.text == 'X'){
+                        xik.push('x')
+                    }else{
+                        oik.push('o')
+                    }
+
+                    $('.aty1').each(function(){
+                        if($(this).data('id') == msg.id){
+                            $(this).find('.bbih5').html( msg.text);
+                        }
+
+                        var allDiv=document.getElementsByClassName("bbih5");
+                        if(allDiv[0].innerText=="X" && allDiv[1].innerText=="X" && allDiv[2].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[3].innerText=="X" && allDiv[4].innerText=="X" && allDiv[5].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[6].innerText=="X" && allDiv[7].innerText=="X" && allDiv[8].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[0].innerText=="X" && allDiv[4].innerText=="X" && allDiv[8].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[0].innerText=="X" && allDiv[3].innerText=="X" && allDiv[6].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[1].innerText=="X" && allDiv[4].innerText=="X" && allDiv[7].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[2].innerText=="X" && allDiv[5].innerText=="X" && allDiv[8].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[2].innerText=="X" && allDiv[4].innerText=="X" && allDiv[6].innerText=="X"){
+                            socket.emit('game over', {'text':'X','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[0].innerText=="O" && allDiv[1].innerText=="O" && allDiv[2].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[3].innerText=="O" && allDiv[4].innerText=="O" && allDiv[5].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[6].innerText=="O" && allDiv[7].innerText=="O" && allDiv[8].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[0].innerText=="O" && allDiv[4].innerText=="O" && allDiv[8].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[0].innerText=="O" && allDiv[3].innerText=="O" && allDiv[6].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[1].innerText=="O" && allDiv[4].innerText=="O" && allDiv[7].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[2].innerText=="O" && allDiv[5].innerText=="O" && allDiv[8].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }else if(allDiv[2].innerText=="O" && allDiv[4].innerText=="O" && allDiv[6].innerText=="O"){
+                            socket.emit('game over', {'text':'O','room':RoomNameMy});
+                            return false;
+                        }
+
+                        if(xik.length == 5){
+                            socket.emit('game over', {'text':'x-o draw'});
+                            return false;
+                        }
+                    })
+
+                }
+            });
+
+            socket.on('game over',function(msg){
+                if(msg.room == RoomNameMy){
+                    $('.game_over').css('display','block');
+                    $('.vv74').html("Win "+msg.text+"");
+                    $('.ddr45').css('display','none')
+                }
+            });
+
+        });
+    </script>
+
+    <script>
+        $(function () {
+            var socket = io(':3000');
+
+            socket.emit('free rooms',{'status':'true'});
+
+            $('.player_chooses').click(function(){
+                var type = $(this).data('type');
+                socket.emit('choose type', {'type':type,'room':RoomNameMy} );
+
+                userPlayItem =  type.toUpperCase();
+
+                $('.player_chooses').remove();
+
+                return false;
+            });
+
+            socket.on('choose type', function(res){
+
+                if(RoomNameMy == res.room){
+                    $('.player_chooses').each(function(){
+                        if($(this).data('type') == res.type){
+                            $(this).css('display','none');
+                        }
+                    });
+
+                    socket.emit('can start', {'start': res,'room':RoomNameMy} );
+                    return false;
+                }
+                return false;
+            });
+
+            socket.on('can start', function(msg){
+                if(RoomNameMy == msg.room){
+                    $('.ddr45').css('display','block');
+                }
+            });
+
+            $('.uiy62').click(function(){
+                $('.dtn51').css('display','block');
+            });
+
+            $('.ilp84').click(function(){
+                var roomName = $('.input_name').val();
+                RoomNameMy = roomName;
+                if(roomName != ''){
+                    socket.emit('create room',{'room':RoomNameMy});
+                    $('.create_room_div').css('display','none');
+
+                    $('.frr43').css('display','none');
+                    $('.uiy62').css('display','none');
+
+                    $('.ddr45').css('display','none');
+                    $('.bbd755').css('display','block');
+                }
+            });
+
+            socket.on('create room',function(room){
+                $('.free_rooms_all').append("<p class='ubbdw37'>" + room.room + "</p><br><br>");
+            });
+            socket.on('free rooms',function(room){
+                $('.free_rooms_all').children('p').remove();
+                for(var j=0;j<room.length;j++){
+                    $('.free_rooms_all').append("<p class='ubbdw37'>" + room[j] + "</p><br><br>");
+                }
+            });
+
+            $('.free_rooms_all').on('click', '.ubbdw37', function() {
+
+                var NameOfRomm = $(this).html();
+                RoomNameMy = NameOfRomm;
+
+                socket.emit('start game', {'start':'ok','name':NameOfRomm} );
+
+                $('.frr43').css('display','none');
+                $('.uiy62').css('display','none');
+
+                return false;
+            })
+
+        });
+    </script> 
+
+
+</body>
+</html>

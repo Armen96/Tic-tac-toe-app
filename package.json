@@ -1,0 +1,21 @@
+{
+  "name": "lesson",
+  "version": "1.0.0",
+  "description": "express lesson install and run",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kostanyan Karen",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "hbs": "^4.0.1",
+    "socket.io": "^1.7.4",
+    "socket.io-client": "^1.6.0",
+    "socket.io-file": "^2.0.14",
+    "socket.io-file-client": "^2.0.12",
+    "supervisor": "^0.12.0"
+  }
+}
